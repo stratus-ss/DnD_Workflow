@@ -1,0 +1,109 @@
+whisper:
+  url: "https://whisper.example.com"          # your Whisper server URL (required)
+  model: "large-v2"                           # whisper model to use
+  language: "en"
+  vad: true                                   # voice activity detection
+  diarize: true                               # speaker diarization
+  tls_skip_verify: false                      # set true for self-signed certs
+  # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
+  # beam_size: 5
+  # poll_interval_sec: 5
+  # poll_timeout_min: 60
+  # upload_timeout_min: 30
+  # max_poll_errors: 30
+  # compute_type: "float16"
+  # best_of: 5
+  # batch_size: 24
+  # no_speech_threshold: "0.6"
+  # log_prob_threshold: "-1.0"
+  # temperature: "0"
+  # word_timestamps: false
+  # condition_on_previous_text: true
+
+perplexity:
+  space_url: "https://www.perplexity.ai/spaces/YOUR_SPACE_ID"  # your Perplexity Space URL (required)
+  chrome_profile: "~/.config/dnd-workflow/chrome-profile"       # persistent Chrome session dir
+  prompt_file: "prompts/session_notes.txt"                      # path to prompt template
+  thread_name: ""                             # specific thread name, or empty for new thread
+  headless: false                             # set true to run Chrome without a window
+  # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
+  # response_timeout_min: 10
+  # response_poll_interval_sec: 5
+  # response_stable_count: 4
+  # window_size: "1280,900"
+  # post_navigate_sleep_sec: 5
+  # after_new_thread_sleep_sec: 2
+  # after_upload_sleep_sec: 3
+  # selectors:
+  #   text_input: 'div[role="textbox"]'
+  #   file_input: 'input[type="file"][multiple]'
+  #   submit_button: 'button[aria-label="Submit"]'
+  #   attach_button: 'button[aria-label="Add files or tools"]'
+  #   response_area: 'div.prose, div[class*="markdown"], .break-words'
+  #   copy_button: 'button[aria-label="Copy"]'
+  #   close_button: 'button[aria-label="Close"]'
+
+tts:
+  url: "https://e2a.example.com"              # your Ebook2AudioBook server URL (required)
+  output_format: "mp3"                        # output audio format (mp3, m4a, etc.)
+  tls_skip_verify: false                      # set true for self-signed certs
+  # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
+  # device: "cpu"
+  # language: "eng"
+  # tts_engine: ""
+  # voice: ""
+  # custom_model: ""
+  # fine_tuned: ""
+  # speed: 1.0
+  # temperature: 0.75
+  # text_splitting: false
+  # output_channel: "mono"
+  # convert_timeout_min: 60
+  # http_timeout_min: 60
+  # gradio_api_prefix: "/gradio_api"
+  # repetition_penalty: 1.0
+  # num_beams: 1
+  # length_penalty: 1.0
+  # gradio_api_names:
+  #   create_session: "/change_gr_restore_session"
+  #   restore_ui: "/restore_interface"
+  #   set_ebook: "/change_gr_ebook_file"
+  #   submit_convert: "/start_conversion"
+  #   refresh_ui: "/refresh_interface"
+  #   audiobook_player: "/update_gr_audiobook_player"
+
+audio:
+  output_format: "mp3"                        # final audio container format
+  # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
+  # min_pause_ms: 600
+  # silence_thresh_db: -40
+  # min_silence_len_ms: 150
+  # output_bitrate: "170k"
+  # pad_sample_rate: 44100
+  # pad_channel_layout: "mono"
+  # target_loudness: -16
+  # paragraph_pause_sec: 1.5
+  # section_pause_sec: 3.0
+  # save_pause_text: false
+  # ffmpeg_path: "ffmpeg"
+  # ffprobe_path: "ffprobe"
+
+wikijs:
+  url: "http://wikijs.example.com"            # your Wiki.js instance URL (required)
+  base_path: "D&D/YourCampaign/Session_Notes"   # wiki path prefix for session pages
+  # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
+  # locale: "en"
+  # editor: "markdown"
+  # is_published: true
+  # tags: ["dnd", "session-notes", "your-campaign"]
+  # page_title_template: "Session Notes - {date}"
+
+output_dir: "./output"                        # working directory for all pipeline outputs
+
+benchmarks:
+  # Seed processing rates used for ETA estimation on first run.
+  # After enough runs, actual benchmark history overrides these automatically.
+  # whisper_rate: 0.17     # seconds of processing per second of audio
+  # tts_rate: 0.04         # seconds of processing per character of text
+  # audio_rate: 0.02       # seconds of processing per second of TTS audio
+  # history_window: 5      # number of past runs to average for rate calculation

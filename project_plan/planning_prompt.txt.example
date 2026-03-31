@@ -1,0 +1,13 @@
+This project is to help with creating a work flow around D&D prep. Right now I take the audio of our session, I upload it to my local whisper server at https://whisper.example.com, using the large_v2 english model using diaterization, VAD. I then download the transcript. I take this transcript and add it to my D&D space in perplexity and have it generate my notes based on both a propt and the space prompt it should be in the thread called "D&D Session Recap Thread". I then take the summary section of the output and run it through a local server https://e2a.example.com which is the open source project Ebook2AudioBook on github. Finally I attempt to edit the audio file for spacing and appropriate timing.
+
+As a last step, I take the whole output from perplexity and put it in my local wikijs instance http://wikijs.example.com under the path http://wikijs.example.com/en/D&D/YourCampaign/Session_Notes/2026/  with that session's date as the arcticle name. 
+
+I have a perplexity pro sub but not the api access. In addition, I want the outputs to be stored in my space so I can refer to them from anywhere in the future. I would think that I would have to use some sort of browser engine like selenium.
+
+come up with a plan on how to accomplish this. in ~/Projects/download_from_ANS, there are some example python scripts of how I am interacting with my local whisper that you might be able to reuse/lift and shift or use as a base for this project. 
+
+I want it to be a single binary. I don't care the language but it should be easy to maintain. If you use Go I want you to use ffmpeg-statigo.
+
+I want you to output the transcript in srt not txt
+
+make sure that whatever you design has a complexity score of 12 or less for functions. A single binary is likely better than having to do a bunch of pip install's for a python project. It might be acceptable to do the POC in python but I want a single binary as the end result
