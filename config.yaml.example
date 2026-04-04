@@ -98,6 +98,11 @@ wikijs:
   # tags: ["dnd", "session-notes", "your-campaign"]
   # page_title_template: "Session Notes - {date}"
 
+distribute:
+  transcript_dir: ""                            # destination for renamed transcripts (e.g. ~/temp/dnd_voice/raw_session_recordings)
+  audio_dir: ""                                 # destination for session recap audio (e.g. ~/Documents/Dungeon_Alchemist/.../audio)
+  audio_completed_dir: ""                       # where previous recaps get moved (default: <audio_dir>/Completed)
+
 output_dir: "./output"                        # working directory for all pipeline outputs
 
 benchmarks:

@@ -90,6 +90,16 @@ func (m *mockPublisher) CheckPageExists(ctx context.Context, path string) (bool,
 	return m.pageExists, nil
 }
 
+type mockDistributor struct {
+	called bool
+	err    error
+}
+
+func (m *mockDistributor) Distribute(ctx context.Context, transcriptSrc, audioSrc, date string) error {
+	m.called = true
+	return m.err
+}
+
 func testConfig(dir string) *config.Config {
 	t := true
 	return &config.Config{
@@ -134,7 +144,9 @@ func TestRunFromAll(t *testing.T) {
 	af := &mockAudioFixer{}
 	pub := &mockPublisher{}
 
-	r := NewRunner(cfg, tr, ng, sp, af, pub)
+	dist := &mockDistributor{}
+
+	r := NewRunner(cfg, tr, ng, sp, af, pub, dist)
 	r.SetForce(true)
 
 	if err := r.RunFrom(context.Background(), "/fake/audio.flac", "2026-03-15", "all", false); err != nil {
@@ -156,6 +168,9 @@ func TestRunFromAll(t *testing.T) {
 	if !pub.createCalled {
 		t.Error("publisher not called")
 	}
+	if !dist.called {
+		t.Error("distributor not called")
+	}
 }
 
 func TestRunFromPerplexity(t *testing.T) {
@@ -174,7 +189,7 @@ func TestRunFromPerplexity(t *testing.T) {
 	af := &mockAudioFixer{}
 	pub := &mockPublisher{}
 
-	r := NewRunner(cfg, tr, ng, sp, af, pub)
+	r := NewRunner(cfg, tr, ng, sp, af, pub, &mockDistributor{})
 	r.SetForce(true)
 
 	if err := r.RunFrom(context.Background(), "", "2026-03-15", "perplexity", true); err != nil {
@@ -210,7 +225,7 @@ func TestRunFromWiki(t *testing.T) {
 	af := &mockAudioFixer{}
 	pub := &mockPublisher{}
 
-	r := NewRunner(cfg, tr, ng, sp, af, pub)
+	r := NewRunner(cfg, tr, ng, sp, af, pub, &mockDistributor{})
 	r.SetForce(true)
 
 	if err := r.RunFrom(context.Background(), "", "2026-03-15", "wiki", false); err != nil {
@@ -232,7 +247,7 @@ func TestRunFromMissingPriorOutput(t *testing.T) {
 	sessionDir := filepath.Join(dir, "2026-03-15")
 	os.MkdirAll(sessionDir, 0o755)
 
-	r := NewRunner(cfg, nil, nil, nil, nil, nil)
+	r := NewRunner(cfg, nil, nil, nil, nil, nil, nil)
 	err := r.RunFrom(context.Background(), "", "2026-03-15", "perplexity", false)
 	if err == nil {
 		t.Fatal("expected error for missing whisper output")
@@ -250,7 +265,7 @@ func TestCheckpointSkipsExistingFiles(t *testing.T) {
 	os.WriteFile(filepath.Join(sessionDir, "transcript_2026-03-15.srt.txt"), []byte("existing"), 0o644)
 
 	tr := &mockTranscriber{}
-	r := NewRunner(cfg, tr, &mockNotesGen{}, &mockSpeaker{}, &mockAudioFixer{}, &mockPublisher{})
+	r := NewRunner(cfg, tr, &mockNotesGen{}, &mockSpeaker{}, &mockAudioFixer{}, &mockPublisher{}, &mockDistributor{})
 
 	if err := r.RunFrom(context.Background(), "/fake/audio.flac", "2026-03-15", "all", false); err != nil {
 		t.Fatalf("RunFrom: %v", err)
@@ -271,7 +286,7 @@ func TestForceOverridesCheckpoint(t *testing.T) {
 	os.WriteFile(filepath.Join(sessionDir, "transcript_2026-03-15.srt.txt"), []byte("existing"), 0o644)
 
 	tr := &mockTranscriber{}
-	r := NewRunner(cfg, tr, &mockNotesGen{}, &mockSpeaker{}, &mockAudioFixer{}, &mockPublisher{})
+	r := NewRunner(cfg, tr, &mockNotesGen{}, &mockSpeaker{}, &mockAudioFixer{}, &mockPublisher{}, &mockDistributor{})
 	r.SetForce(true)
 
 	if err := r.RunFrom(context.Background(), "/fake/audio.flac", "2026-03-15", "all", false); err != nil {
@@ -288,7 +303,7 @@ func TestWikiDedupSkipsExistingPage(t *testing.T) {
 	t.Setenv("WIKIJS_TOKEN", "fake-token")
 
 	pub := &mockPublisher{pageExists: true}
-	r := NewRunner(cfg, nil, nil, nil, nil, pub)
+	r := NewRunner(cfg, nil, nil, nil, nil, pub, nil)
 
 	if err := r.RunPublish(context.Background(), "# notes", "2026-03-15"); err != nil {
 		t.Fatalf("RunPublish: %v", err)
@@ -306,7 +321,7 @@ func TestRunPublishMissingToken(t *testing.T) {
 	cfg := testConfig(dir)
 	t.Setenv("WIKIJS_TOKEN", "")
 
-	r := NewRunner(cfg, nil, nil, nil, nil, nil)
+	r := NewRunner(cfg, nil, nil, nil, nil, nil, nil)
 	err := r.RunPublish(context.Background(), "content", "2026-03-15")
 	if err == nil {
 		t.Fatal("expected error for missing token")
@@ -314,7 +329,7 @@ func TestRunPublishMissingToken(t *testing.T) {
 }
 
 func TestValidStep(t *testing.T) {
-	for _, s := range []string{"all", "whisper", "perplexity", "tts", "audio", "wiki"} {
+	for _, s := range []string{"all", "whisper", "perplexity", "tts", "audio", "wiki", "distribute"} {
 		if !ValidStep(s) {
 			t.Errorf("ValidStep(%q) = false, want true", s)
 		}
@@ -339,7 +354,7 @@ func TestRunSingleStep(t *testing.T) {
 	af := &mockAudioFixer{}
 	pub := &mockPublisher{}
 
-	r := NewRunner(cfg, tr, ng, sp, af, pub)
+	r := NewRunner(cfg, tr, ng, sp, af, pub, &mockDistributor{})
 	r.SetForce(true)
 
 	if err := r.RunFrom(context.Background(), "", "2026-03-15", "perplexity", false); err != nil {

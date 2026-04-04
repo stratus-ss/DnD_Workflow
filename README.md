@@ -23,6 +23,7 @@ A Go CLI that automates D&D session post-processing: transcribe audio, generate 
 | 3 | Text-to-Speech | `tts` | ~5 min |
 | 4 | Audio Post-Processing | `audio` | ~10 sec |
 | 5 | Wiki.js Publish | `wiki` | ~2 sec |
+| 6 | File Distribution | `distribute` | ~1 sec |
 
 Each step checkpoints its output. If the output file exists, the step is skipped (override with `--force`).
 
@@ -63,6 +64,14 @@ Publishes session notes to Wiki.js via GraphQL. Checks for duplicate pages befor
 - **Input**: Full notes markdown from Step 2
 - **Output**: Wiki.js page at `<base_path>/<year>/<date>`
 - **Dedup**: Skipped if page already exists at that path
+
+### Step 6: File Distribution
+
+Copies pipeline outputs to their final destinations with human-friendly date naming (`MMM_DD_YYYY`). Any existing `session_recap_*` file in the audio destination is moved to a `Completed/` subdirectory before the new one is placed. Skipped entirely if no destination paths are configured.
+
+- **Input**: Transcript from Step 1 + final audio from Step 4
+- **Output**: `<transcript_dir>/Apr_04_2026.srt.txt` + `<audio_dir>/session_recap_Apr_04_2026.mp3`
+- **Config**: Paths set via `distribute.*` in `config.yaml` or `DND_DISTRIBUTE_*` env vars
 
 ## Quick Start
 

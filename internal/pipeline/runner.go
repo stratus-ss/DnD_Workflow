@@ -14,7 +14,7 @@ import (
 	"dnd-workflow/internal/tts"
 )
 
-var StepOrder = []string{"whisper", "perplexity", "tts", "audio", "wiki"}
+var StepOrder = []string{"whisper", "perplexity", "tts", "audio", "wiki", "distribute"}
 
 type Transcriber interface {
 	Transcribe(ctx context.Context, audioPath, outputPath string) error
@@ -39,6 +39,10 @@ type Publisher interface {
 	CheckPageExists(ctx context.Context, path string) (bool, error)
 }
 
+type FileDistributor interface {
+	Distribute(ctx context.Context, transcriptSrc, audioSrc, date string) error
+}
+
 type Runner struct {
 	cfg        *config.Config
 	transcribe Transcriber
@@ -46,11 +50,12 @@ type Runner struct {
 	speak      Speaker
 	audioFix   AudioFixer
 	publish    Publisher
+	distribute FileDistributor
 	force      bool
 	reporter   *progress.Reporter
 }
 
-func NewRunner(cfg *config.Config, t Transcriber, n NotesGenerator, s Speaker, a AudioFixer, p Publisher) *Runner {
+func NewRunner(cfg *config.Config, t Transcriber, n NotesGenerator, s Speaker, a AudioFixer, p Publisher, d FileDistributor) *Runner {
 	return &Runner{
 		cfg:        cfg,
 		transcribe: t,
@@ -58,6 +63,7 @@ func NewRunner(cfg *config.Config, t Transcriber, n NotesGenerator, s Speaker, a
 		speak:      s,
 		audioFix:   a,
 		publish:    p,
+		distribute: d,
 	}
 }
 
@@ -188,6 +194,17 @@ func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string,
 		}
 		if err := r.RunPublish(ctx, fullNotes, date); err != nil {
 			return fmt.Errorf("step wiki: %w", err)
+		}
+	}
+
+	// Step 5: distribute — needs whisper transcript and audio output
+	if start <= 5 && 5 <= end {
+		if srtPath == "" {
+			srtPath = filepath.Join(sessionDir, fmt.Sprintf("transcript_%s.srt.txt", date))
+		}
+		finalAudioPath := filepath.Join(sessionDir, fmt.Sprintf("narration_final_%s.%s", date, ext))
+		if err := r.runDistribute(ctx, srtPath, finalAudioPath, date); err != nil {
+			return fmt.Errorf("step distribute: %w", err)
 		}
 	}
 
@@ -386,6 +403,35 @@ func (r *Runner) RunPublish(ctx context.Context, content, date string) error {
 	slog.Info("published to wiki", "page_id", pageID, "path", path)
 	r.reporter.CompleteStep(progress.InputMetric{}, "")
 	return nil
+}
+
+func (r *Runner) runDistribute(ctx context.Context, transcriptPath, audioPath, date string) (retErr error) {
+	r.reporter.StartStep("distribute", 0)
+	defer func() {
+		if retErr != nil {
+			r.reporter.FailStep(retErr)
+		} else {
+			r.reporter.CompleteStep(progress.InputMetric{}, "")
+		}
+	}()
+
+	slog.Info("starting step", "step", "distribute")
+
+	if !fileExists(transcriptPath) {
+		slog.Warn("transcript not found, skipping transcript distribution", "path", transcriptPath)
+		transcriptPath = ""
+	}
+	if !fileExists(audioPath) {
+		slog.Warn("final audio not found, skipping audio distribution", "path", audioPath)
+		audioPath = ""
+	}
+
+	if transcriptPath == "" && audioPath == "" {
+		slog.Info("no files to distribute, skipping")
+		return nil
+	}
+
+	return r.distribute.Distribute(ctx, transcriptPath, audioPath, date)
 }
 
 func fileExists(path string) bool {

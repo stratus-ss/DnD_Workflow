@@ -9,6 +9,7 @@ import (
 
 	"dnd-workflow/internal/audio"
 	"dnd-workflow/internal/config"
+	"dnd-workflow/internal/distribute"
 	"dnd-workflow/internal/perplexity"
 	"dnd-workflow/internal/pipeline"
 	"dnd-workflow/internal/tts"
@@ -50,8 +51,9 @@ func newRunner(cfg *config.Config, force bool) *pipeline.Runner {
 
 	token := config.WikiJSToken()
 	wikiClient := wikijs.NewClient(cfg.WikiJS, token)
+	dist := distribute.New(cfg.Distribute)
 
-	r := pipeline.NewRunner(cfg, whisperClient, browser, speaker, proc, wikiClient)
+	r := pipeline.NewRunner(cfg, whisperClient, browser, speaker, proc, wikiClient, dist)
 	r.SetForce(force)
 	return r
 }

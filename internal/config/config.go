@@ -131,6 +131,12 @@ type WikiJSConfig struct {
 	PageTitleTemplate string   `yaml:"page_title_template"`
 }
 
+type DistributeConfig struct {
+	TranscriptDir     string `yaml:"transcript_dir"`
+	AudioDir          string `yaml:"audio_dir"`
+	AudioCompletedDir string `yaml:"audio_completed_dir"`
+}
+
 type BenchmarksConfig struct {
 	WhisperRate   float64 `yaml:"whisper_rate"`
 	TTSRate       float64 `yaml:"tts_rate"`
@@ -144,6 +150,7 @@ type Config struct {
 	TTS        TTSConfig        `yaml:"tts"`
 	Audio      AudioConfig      `yaml:"audio"`
 	WikiJS     WikiJSConfig     `yaml:"wikijs"`
+	Distribute DistributeConfig `yaml:"distribute"`
 	Benchmarks BenchmarksConfig `yaml:"benchmarks"`
 	OutputDir  string           `yaml:"output_dir"`
 }
@@ -388,11 +395,23 @@ func (c *Config) expandPaths() {
 	c.Perplexity.ChromeProfile = expandHome(c.Perplexity.ChromeProfile)
 	c.Perplexity.PromptFile = expandHome(c.Perplexity.PromptFile)
 	c.OutputDir = expandHome(c.OutputDir)
+	c.Distribute.TranscriptDir = expandHome(c.Distribute.TranscriptDir)
+	c.Distribute.AudioDir = expandHome(c.Distribute.AudioDir)
+	c.Distribute.AudioCompletedDir = expandHome(c.Distribute.AudioCompletedDir)
 }
 
 func (c *Config) applyEnvOverrides() {
 	if v := os.Getenv("DND_OUTPUT_DIR"); v != "" {
 		c.OutputDir = v
+	}
+	if v := os.Getenv("DND_DISTRIBUTE_TRANSCRIPT_DIR"); v != "" {
+		c.Distribute.TranscriptDir = v
+	}
+	if v := os.Getenv("DND_DISTRIBUTE_AUDIO_DIR"); v != "" {
+		c.Distribute.AudioDir = v
+	}
+	if v := os.Getenv("DND_DISTRIBUTE_AUDIO_COMPLETED_DIR"); v != "" {
+		c.Distribute.AudioCompletedDir = v
 	}
 }
 
