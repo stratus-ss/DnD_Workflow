@@ -1,5 +1,4 @@
 // Package distribute copies pipeline output files to configured destination directories.
-
 package distribute
 
 import (

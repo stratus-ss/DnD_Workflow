@@ -255,7 +255,7 @@ func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string,
 
 	// Step 6: wiki — needs perplexity notes output
 	if start <= stepWiki && stepWiki <= end {
-		if start > 1 && fullNotes == "" {
+		if start > stepPerplexity && fullNotes == "" {
 			// Check both custom recaps dir and session dir for existing notes
 			recapsDir := sessionDir
 			if r.cfg.Perplexity.SessionRecapsDir != "" {
@@ -570,6 +570,9 @@ func (r *Runner) runAudioFix(ctx context.Context, inputPath, sessionDir, date, e
 }
 
 func (r *Runner) RunPublish(ctx context.Context, content, date string) error {
+	if err := config.ValidateDate(date); err != nil {
+		return err
+	}
 	r.reporter.StartStep("wiki", 0)
 	slog.Info("starting step", "step", "wiki")
 

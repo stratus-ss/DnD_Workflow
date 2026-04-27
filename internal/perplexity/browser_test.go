@@ -7,9 +7,9 @@ import (
 )
 
 func TestParseSummaryRealData(t *testing.T) {
-	data, err := os.ReadFile("../../example_files/example_summary.txt")
+	data, err := os.ReadFile("testdata/example_summary.txt")
 	if err != nil {
-		t.Skip("example_summary.txt not found")
+		t.Skip("testdata/example_summary.txt not found")
 	}
 
 	narration := ParseSummary(string(data))

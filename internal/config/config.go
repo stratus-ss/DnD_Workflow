@@ -1,5 +1,4 @@
 // Package config handles YAML configuration loading, validation, and environment variable overrides.
-
 package config
 
 import (

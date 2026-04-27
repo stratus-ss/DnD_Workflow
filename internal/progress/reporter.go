@@ -1,5 +1,4 @@
 // Package progress tracks step timing, benchmarks, and pipeline status reporting.
-
 package progress
 
 import (
