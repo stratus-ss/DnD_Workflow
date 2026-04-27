@@ -41,6 +41,7 @@ type Publisher interface {
 
 type FileDistributor interface {
 	Distribute(ctx context.Context, transcriptSrc, audioSrc, date string) error
+	MoveOriginalAudio(ctx context.Context, srcPath, date string) error
 }
 
 type Runner struct {
@@ -244,12 +245,27 @@ func (r *Runner) runTranscribe(ctx context.Context, audioPath, sessionDir, date 
 	}
 
 	slog.Info("transcript saved", "path", srtPath)
+
+	if r.cfg.Distribute.OriginalAudioDir != "" && audioPath != "" {
+		if err := r.distribute.MoveOriginalAudio(ctx, audioPath, date); err != nil {
+			slog.Warn("failed to move original audio (continuing pipeline)", "error", err)
+		}
+	}
+
 	return srtPath, nil
 }
 
 func (r *Runner) runNotes(ctx context.Context, srtPath, sessionDir, date string) (fullNotes string, narration string, retErr error) {
-	notesPath := filepath.Join(sessionDir, fmt.Sprintf("notes_%s.md", date))
-	narrationPath := filepath.Join(sessionDir, fmt.Sprintf("narration_%s.md", date))
+	recapsDir := sessionDir
+	if r.cfg.Perplexity.SessionRecapsDir != "" {
+		recapsDir = r.cfg.Perplexity.SessionRecapsDir
+		slog.Info("using perplexity session recaps directory", "path", recapsDir)
+		if err := os.MkdirAll(recapsDir, 0o755); err != nil {
+			return "", "", fmt.Errorf("ensure recaps dir: %w", err)
+		}
+	}
+	notesPath := filepath.Join(recapsDir, fmt.Sprintf("notes_%s.md", date))
+	narrationPath := filepath.Join(recapsDir, fmt.Sprintf("narration_%s.md", date))
 
 	if !r.force && fileExists(notesPath) && fileExists(narrationPath) {
 		slog.Info("notes exist, skipping")

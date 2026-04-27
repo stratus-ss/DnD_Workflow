@@ -112,6 +112,33 @@ func (d *Distributor) rotateExistingRecap() error {
 	return nil
 }
 
+// MoveOriginalAudio moves the original audio file to the configured directory
+// after successful transcription. Errors are logged but do not fail the pipeline.
+func (d *Distributor) MoveOriginalAudio(_ context.Context, srcPath, date string) error {
+	if d.cfg.OriginalAudioDir == "" {
+		return nil
+	}
+
+	displayDate, err := toDisplayDate(date)
+	if err != nil {
+		return fmt.Errorf("parse date %q: %w", date, err)
+	}
+
+	if err := os.MkdirAll(d.cfg.OriginalAudioDir, 0o755); err != nil {
+		return fmt.Errorf("ensure original audio dir: %w", err)
+	}
+
+	filename := filepath.Base(srcPath)
+	dst := filepath.Join(d.cfg.OriginalAudioDir, displayDate+filename)
+
+	if err := copyFile(srcPath, dst); err != nil {
+		return fmt.Errorf("copy original audio: %w", err)
+	}
+
+	slog.Info("moved original audio file", "dst", dst)
+	return nil
+}
+
 // toDisplayDate converts "2026-03-29" to "Mar_29_2026".
 func toDisplayDate(isoDate string) (string, error) {
 	t, err := time.Parse("2006-01-02", isoDate)

@@ -352,16 +352,28 @@ func (b *Browser) GenerateNotes(srtPath, promptText string) (string, string, err
 }
 
 func (b *Browser) GenerateNotesInThread(srtPath, promptText, threadName string) (string, string, error) {
-	if err := b.NavigateToSpace(); err != nil {
-		return "", "", fmt.Errorf("navigate: %w", err)
+	if err := b.UploadAndSubmit(srtPath, promptText, threadName); err != nil {
+		return "", "", err
 	}
 
-	var currentURL string
-	if err := chromedp.Run(b.ctx, chromedp.Location(&currentURL)); err != nil {
-		return "", "", fmt.Errorf("get location: %w", err)
+	timeout := time.Duration(b.cfg.ResponseTimeoutMin) * time.Minute
+	if err := b.WaitForResponse(timeout); err != nil {
+		return "", "", fmt.Errorf("wait: %w", err)
 	}
-	if !strings.Contains(currentURL, "/spaces/") {
-		return "", "", fmt.Errorf("not in space, current URL: %s", currentURL)
+
+	return b.ScrapeExistingResponse()
+}
+
+// UploadAndSubmit navigates to the Perplexity space, opens the thread, uploads the SRT
+// file, and submits the prompt. It returns after submission without waiting for response.
+// Caller is responsible for closing the browser via Close().
+func (b *Browser) UploadAndSubmit(srtPath, promptText, threadName string) error {
+	if err := b.NavigateToSpace(); err != nil {
+		return fmt.Errorf("navigate: %w", err)
+	}
+
+	if !b.isOnPerplexitySpace() {
+		return fmt.Errorf("not in Perplexity space, current URL: %s", b.currentURL())
 	}
 
 	if threadName != "" {
@@ -371,16 +383,36 @@ func (b *Browser) GenerateNotesInThread(srtPath, promptText, threadName string) 
 	}
 
 	if err := b.UploadFile(srtPath); err != nil {
-		return "", "", fmt.Errorf("upload: %w", err)
+		return fmt.Errorf("upload: %w", err)
 	}
 
 	if err := b.SubmitPrompt(promptText); err != nil {
-		return "", "", fmt.Errorf("submit: %w", err)
+		return fmt.Errorf("submit: %w", err)
 	}
 
-	timeout := time.Duration(b.cfg.ResponseTimeoutMin) * time.Minute
-	if err := b.WaitForResponse(timeout); err != nil {
-		return "", "", fmt.Errorf("wait: %w", err)
+	return nil
+}
+
+// ScrapeExistingResponse navigates to the Perplexity space and thread,
+// then extracts the full markdown notes and narration summary from the last response.
+func (b *Browser) ScrapeExistingResponse() (string, string, error) {
+	if err := b.NavigateToSpace(); err != nil {
+		return "", "", fmt.Errorf("navigate: %w", err)
+	}
+
+	if !b.isOnPerplexitySpace() {
+		return "", "", fmt.Errorf("not in Perplexity space, current URL: %s", b.currentURL())
+	}
+
+	if b.cfg.ThreadName != "" {
+		if err := b.OpenThread(b.cfg.ThreadName); err != nil {
+			slog.Warn("could not open thread, scraping current page", "error", err)
+		}
+	}
+
+	length, err := b.responseLength()
+	if err != nil || length == 0 {
+		return "", "", fmt.Errorf("no response visible on page")
 	}
 
 	fullMarkdown, err := b.ExtractMarkdown()
@@ -389,11 +421,25 @@ func (b *Browser) GenerateNotesInThread(srtPath, promptText, threadName string) 
 	}
 
 	summary := ParseSummary(fullMarkdown)
+	if summary == "" {
+		slog.Warn("ParseSummary returned empty - heading format may not match", "markdown_len", len(fullMarkdown))
+	}
 	return fullMarkdown, summary, nil
 }
 
+func (b *Browser) isOnPerplexitySpace() bool {
+	url := b.currentURL()
+	return strings.Contains(url, "/spaces/")
+}
+
+func (b *Browser) currentURL() string {
+	var url string
+	chromedp.Run(b.ctx, chromedp.Location(&url))
+	return url
+}
+
 func ParseSummary(fullText string) string {
-	re := regexp.MustCompile(`(?si)(?:^|\n)#*\s*Session\s+Narration[^\n]*\n(.*?)(?:\n#*\s*DM\s+Summary|\z)`)
+	re := regexp.MustCompile(`(?si)(?:^|\n)#[^\n]*?Session Narration[^\n]*\n(.*?)(?:\n#[^\n]*?DM Summary|\z)`)
 	matches := re.FindStringSubmatch(fullText)
 	if len(matches) >= 2 {
 		return strings.TrimSpace(matches[1])

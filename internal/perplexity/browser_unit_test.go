@@ -53,6 +53,18 @@ Multiple lines of narration content.`
 	}
 }
 
+func TestParseSummaryEmojiHeadings(t *testing.T) {
+	input := "# 🎙️ Session Narration — April 26, 2026\n\n" +
+		"The party explored the dungeon.\n\n" +
+		"***\n***\n\n" +
+		"# 📋 DM Summary — April 26, 2026\n\n" +
+		"## Session Overview\nThey cleared it."
+	narration := ParseSummary(input)
+	if narration == "" {
+		t.Fatal("ParseSummary returned empty for emoji headings")
+	}
+}
+
 func TestJsStringLiteral(t *testing.T) {
 	tests := []struct {
 		input    string

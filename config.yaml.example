@@ -26,6 +26,7 @@ perplexity:
   prompt_file: "prompts/session_notes.txt"                      # path to prompt template
   thread_name: ""                             # specific thread name, or empty for new thread
   headless: false                             # set true to run Chrome without a window
+  session_recaps_dir: ""                      # Optional: Store session recaps (notes/narration) here instead of session dir
   # --- Defaults below are known working values. Uncomment only if you know what you're doing ---
   # response_timeout_min: 10
   # response_poll_interval_sec: 5
@@ -102,6 +103,8 @@ distribute:
   transcript_dir: ""                            # destination for renamed transcripts (e.g. ~/temp/dnd_voice/raw_session_recordings)
   audio_dir: ""                                 # destination for session recap audio (e.g. ~/Documents/Dungeon_Alchemist/.../audio)
   audio_completed_dir: ""                       # where previous recaps get moved (default: <audio_dir>/Completed)
+  original_audio_dir: ""                        # Optional: Move original audio files here after transcription
+
 
 output_dir: "./output"                        # working directory for all pipeline outputs
 

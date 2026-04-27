@@ -46,11 +46,12 @@ type PerplexitySelectors struct {
 }
 
 type PerplexityConfig struct {
-	SpaceURL      string `yaml:"space_url"`
-	ChromeProfile string `yaml:"chrome_profile"`
-	PromptFile    string `yaml:"prompt_file"`
-	ThreadName    string `yaml:"thread_name"`
-	Headless      bool   `yaml:"headless"`
+	SpaceURL         string `yaml:"space_url"`
+	ChromeProfile    string `yaml:"chrome_profile"`
+	PromptFile       string `yaml:"prompt_file"`
+	ThreadName       string `yaml:"thread_name"`
+	Headless         bool   `yaml:"headless"`
+	SessionRecapsDir string `yaml:"session_recaps_dir"`
 
 	// Tier 2: timing and response detection
 	ResponseTimeoutMin      int    `yaml:"response_timeout_min"`
@@ -66,28 +67,28 @@ type PerplexityConfig struct {
 }
 
 type GradioAPINames struct {
-	CreateSession string `yaml:"create_session"`
-	RestoreUI     string `yaml:"restore_ui"`
-	SetEbook      string `yaml:"set_ebook"`
-	SubmitConvert string `yaml:"submit_convert"`
-	RefreshUI     string `yaml:"refresh_ui"`
+	CreateSession   string `yaml:"create_session"`
+	RestoreUI       string `yaml:"restore_ui"`
+	SetEbook        string `yaml:"set_ebook"`
+	SubmitConvert   string `yaml:"submit_convert"`
+	RefreshUI       string `yaml:"refresh_ui"`
 	AudiobookPlayer string `yaml:"audiobook_player"`
 }
 
 type TTSConfig struct {
-	URL          string  `yaml:"url"`
-	Device       string  `yaml:"device"`
-	Language     string  `yaml:"language"`
-	OutputFormat string  `yaml:"output_format"`
-	TTSEngine    string  `yaml:"tts_engine"`
-	Voice        string  `yaml:"voice"`
-	CustomModel  string  `yaml:"custom_model"`
-	FineTuned    string  `yaml:"fine_tuned"`
-	Speed        float64 `yaml:"speed"`
-	Temperature  float64 `yaml:"temperature"`
-	TextSplitting bool   `yaml:"text_splitting"`
-	OutputChannel string `yaml:"output_channel"`
-	TLSSkipVerify bool   `yaml:"tls_skip_verify"`
+	URL           string  `yaml:"url"`
+	Device        string  `yaml:"device"`
+	Language      string  `yaml:"language"`
+	OutputFormat  string  `yaml:"output_format"`
+	TTSEngine     string  `yaml:"tts_engine"`
+	Voice         string  `yaml:"voice"`
+	CustomModel   string  `yaml:"custom_model"`
+	FineTuned     string  `yaml:"fine_tuned"`
+	Speed         float64 `yaml:"speed"`
+	Temperature   float64 `yaml:"temperature"`
+	TextSplitting bool    `yaml:"text_splitting"`
+	OutputChannel string  `yaml:"output_channel"`
+	TLSSkipVerify bool    `yaml:"tls_skip_verify"`
 
 	// Tier 2: timeouts and API paths
 	ConvertTimeoutMin int    `yaml:"convert_timeout_min"`
@@ -135,6 +136,7 @@ type DistributeConfig struct {
 	TranscriptDir     string `yaml:"transcript_dir"`
 	AudioDir          string `yaml:"audio_dir"`
 	AudioCompletedDir string `yaml:"audio_completed_dir"`
+	OriginalAudioDir  string `yaml:"original_audio_dir"`
 }
 
 type BenchmarksConfig struct {
@@ -394,10 +396,12 @@ func applyDefaultAPINames(api *GradioAPINames) {
 func (c *Config) expandPaths() {
 	c.Perplexity.ChromeProfile = expandHome(c.Perplexity.ChromeProfile)
 	c.Perplexity.PromptFile = expandHome(c.Perplexity.PromptFile)
+	c.Perplexity.SessionRecapsDir = expandHome(c.Perplexity.SessionRecapsDir)
 	c.OutputDir = expandHome(c.OutputDir)
 	c.Distribute.TranscriptDir = expandHome(c.Distribute.TranscriptDir)
 	c.Distribute.AudioDir = expandHome(c.Distribute.AudioDir)
 	c.Distribute.AudioCompletedDir = expandHome(c.Distribute.AudioCompletedDir)
+	c.Distribute.OriginalAudioDir = expandHome(c.Distribute.OriginalAudioDir)
 }
 
 func (c *Config) applyEnvOverrides() {
@@ -412,6 +416,12 @@ func (c *Config) applyEnvOverrides() {
 	}
 	if v := os.Getenv("DND_DISTRIBUTE_AUDIO_COMPLETED_DIR"); v != "" {
 		c.Distribute.AudioCompletedDir = v
+	}
+	if v := os.Getenv("DND_DISTRIBUTE_ORIGINAL_AUDIO_DIR"); v != "" {
+		c.Distribute.OriginalAudioDir = v
+	}
+	if v := os.Getenv("DND_PERPLEXITY_SESSION_RECAPS_DIR"); v != "" {
+		c.Perplexity.SessionRecapsDir = v
 	}
 }
 
