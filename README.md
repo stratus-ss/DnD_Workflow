@@ -190,6 +190,10 @@ make build-statigo
 
 Requires `CGO_ENABLED=1` and a C compiler (gcc/clang). The static libraries are platform-specific (Linux/macOS, amd64/arm64).
 
+## Code Flow Documentation
+
+For detailed code flow diagrams and explanations, see [CODEFLOW.md](CODEFLOW.md). This document provides Mermaid diagrams that visualize the pipeline execution, decision points, and data flow between components.
+
 ## Legal
 
 This project is licensed under the [GNU Affero General Public License v3.0](LICENSE).
