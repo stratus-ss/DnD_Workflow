@@ -1,3 +1,4 @@
+// Package perplexity automates Chrome-based interaction with Perplexity AI for session note generation.
 package perplexity
 
 import (
@@ -438,9 +439,10 @@ func (b *Browser) currentURL() string {
 	return url
 }
 
+var reSummary = regexp.MustCompile(`(?si)(?:^|\n)#[^\n]*?Session Narration[^\n]*\n(.*?)(?:\n#[^\n]*?DM Summary|\z)`)
+
 func ParseSummary(fullText string) string {
-	re := regexp.MustCompile(`(?si)(?:^|\n)#[^\n]*?Session Narration[^\n]*\n(.*?)(?:\n#[^\n]*?DM Summary|\z)`)
-	matches := re.FindStringSubmatch(fullText)
+	matches := reSummary.FindStringSubmatch(fullText)
 	if len(matches) >= 2 {
 		return strings.TrimSpace(matches[1])
 	}

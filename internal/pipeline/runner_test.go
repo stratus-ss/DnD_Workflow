@@ -44,6 +44,17 @@ func (m *mockNotesGen) GenerateNotesInThread(srtPath, promptText, threadName str
 	return "# Full Notes\n\nContent here.", "Narration text for TTS.", nil
 }
 
+func (m *mockNotesGen) UploadAndSubmit(srtPath, promptText, threadName string) error {
+	return nil
+}
+
+func (m *mockNotesGen) ScrapeExistingResponse() (string, string, error) {
+	if m.err != nil {
+		return "", "", m.err
+	}
+	return "# Full Notes\n\nContent here.", "Narration text for TTS.", nil
+}
+
 type mockSpeaker struct {
 	called bool
 	err    error
@@ -91,13 +102,18 @@ func (m *mockPublisher) CheckPageExists(ctx context.Context, path string) (bool,
 }
 
 type mockDistributor struct {
-	called bool
-	err    error
+	called        bool
+	distributeErr error
+	moveAudioErr  error
 }
 
 func (m *mockDistributor) Distribute(ctx context.Context, transcriptSrc, audioSrc, date string) error {
 	m.called = true
-	return m.err
+	return m.distributeErr
+}
+
+func (m *mockDistributor) MoveOriginalAudio(ctx context.Context, srcPath, date string) error {
+	return m.moveAudioErr
 }
 
 func testConfig(dir string) *config.Config {

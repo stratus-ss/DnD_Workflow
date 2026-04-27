@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ import (
 )
 
 var cfgPath string
+var logLevel string
 
 func main() {
 	rootCmd := buildRootCmd()
@@ -98,6 +100,13 @@ func buildRunCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			var level slog.Level
+			if err := level.UnmarshalText([]byte(logLevel)); err != nil {
+				return fmt.Errorf("invalid log level %q: %w", logLevel, err)
+			}
+			slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: level})))
+
 			return newRunner(cfg, force).RunFrom(cmd.Context(), audioPath, date, step, continueSteps)
 		},
 	}
@@ -107,6 +116,7 @@ func buildRunCmd() *cobra.Command {
 	cmd.Flags().StringVar(&step, "step", "all", "step to run: all, "+strings.Join(pipeline.StepOrder, ", "))
 	cmd.Flags().BoolVar(&continueSteps, "continue", false, "continue through remaining steps after --step")
 	cmd.Flags().BoolVar(&force, "force", false, "re-run steps even if output files exist")
+	cmd.Flags().StringVar(&logLevel, "log-level", "info", "log level (debug, info, warn, error)")
 
 	return cmd
 }

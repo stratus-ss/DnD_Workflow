@@ -1,3 +1,4 @@
+// Package tts provides a Gradio client for the ebook2audiobook text-to-speech service.
 package tts
 
 import (
@@ -247,29 +248,29 @@ func (c *Client) submitConversion(ctx context.Context, sessionHash, sessionID, u
 	fileData := gradioFileData(uploadedPath)
 
 	data := []interface{}{
-		sessionID,             // [0]  session_id
-		c.cfg.Device,          // [1]  device
-		fileData,              // [2]  ebook_file
-		false,                 // [3]  blocks_preview
-		c.cfg.TTSEngine,       // [4]  tts_engine
-		c.cfg.Language,        // [5]  language
-		voicePath,             // [6]  voice
-		nil,                   // [7]  custom_model
-		fineTuned,             // [8]  fine_tuned
-		c.cfg.OutputFormat,    // [9]  output_format
-		c.cfg.OutputChannel,   // [10] output_channel
-		c.cfg.Temperature,     // [11] xtts_temperature
-		c.cfg.LengthPenalty,   // [12] xtts_length_penalty
-		c.cfg.NumBeams,        // [13] xtts_num_beams
+		sessionID,               // [0]  session_id
+		c.cfg.Device,            // [1]  device
+		fileData,                // [2]  ebook_file
+		false,                   // [3]  blocks_preview
+		c.cfg.TTSEngine,         // [4]  tts_engine
+		c.cfg.Language,          // [5]  language
+		voicePath,               // [6]  voice
+		nil,                     // [7]  custom_model
+		fineTuned,               // [8]  fine_tuned
+		c.cfg.OutputFormat,      // [9]  output_format
+		c.cfg.OutputChannel,     // [10] output_channel
+		c.cfg.Temperature,       // [11] xtts_temperature
+		c.cfg.LengthPenalty,     // [12] xtts_length_penalty
+		c.cfg.NumBeams,          // [13] xtts_num_beams
 		c.cfg.RepetitionPenalty, // [14] xtts_repetition_penalty
-		50,                    // [15] xtts_top_k
-		0.95,                  // [16] xtts_top_p
-		c.cfg.Speed,           // [17] xtts_speed
-		c.cfg.TextSplitting,   // [18] xtts_enable_text_splitting
-		0.22,                  // [19] bark_text_temp
-		0.44,                  // [20] bark_waveform_temp
-		false,                 // [21] output_split
-		"6",                   // [22] output_split_hours
+		50,                      // [15] xtts_top_k
+		0.95,                    // [16] xtts_top_p
+		c.cfg.Speed,             // [17] xtts_speed
+		c.cfg.TextSplitting,     // [18] xtts_enable_text_splitting
+		0.22,                    // [19] bark_text_temp
+		0.44,                    // [20] bark_waveform_temp
+		false,                   // [21] output_split
+		"6",                     // [22] output_split_hours
 	}
 
 	slog.Info("conversion submitted, waiting for completion")

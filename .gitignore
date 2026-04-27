@@ -17,3 +17,10 @@ README.local.md
 ebook2audiobook_api.txt
 .venv/
 ~/
+
+# Debug/scratch files at repo root
+/debug_*.go
+/test_*.go
+/final_*.go
+/verify_*.go
+/dnd-workflow-test

@@ -1,3 +1,5 @@
+// Package config handles YAML configuration loading, validation, and environment variable overrides.
+
 package config
 
 import (
@@ -7,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -513,4 +516,12 @@ func (c *Config) EnsureSessionDir(date string) (string, error) {
 // WikiPageTitle generates the wiki page title using the configured template.
 func (c *Config) WikiPageTitle(date string) string {
 	return strings.Replace(c.WikiJS.PageTitleTemplate, "{date}", date, 1)
+}
+
+// ValidateDate checks that date is in YYYY-MM-DD format.
+func ValidateDate(date string) error {
+	if _, err := time.Parse("2006-01-02", date); err != nil {
+		return fmt.Errorf("date must be YYYY-MM-DD format: %w", err)
+	}
+	return nil
 }

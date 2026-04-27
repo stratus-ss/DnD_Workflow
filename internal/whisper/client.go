@@ -1,3 +1,4 @@
+// Package whisper provides an HTTP client for the Whisper-WebUI transcription service.
 package whisper
 
 import (

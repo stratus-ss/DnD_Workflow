@@ -1,5 +1,6 @@
 //go:build !statigo
 
+// Package audio provides FFmpeg-based audio post-processing for D&D session narrations.
 package audio
 
 import (
@@ -9,6 +10,7 @@ import (
 	"os/exec"
 
 	"dnd-workflow/internal/config"
+	"dnd-workflow/internal/fileutil"
 )
 
 type Processor struct {
@@ -30,7 +32,7 @@ func (p *Processor) Process(ctx context.Context, inputPath, outputPath string) e
 	shortGaps := findShortGaps(silences, p.cfg.MinPauseMs)
 	if len(shortGaps) == 0 {
 		slog.Info("no short gaps to fix, copying file as-is")
-		return copyFile(inputPath, outputPath)
+		return fileutil.CopyFile(inputPath, outputPath)
 	}
 
 	slog.Info("injecting pauses for short gaps", "count", len(shortGaps), "min_pause_ms", p.cfg.MinPauseMs)
@@ -89,5 +91,3 @@ func (p *Processor) injectPauses(ctx context.Context, inputPath, outputPath stri
 
 	return nil
 }
-
-

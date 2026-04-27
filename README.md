@@ -20,10 +20,14 @@ A Go CLI that automates D&D session post-processing: transcribe audio, generate 
 |------|------|---------------|--------------|
 | 1 | Whisper Transcription | `whisper` | ~15 min |
 | 2 | Perplexity Notes | `perplexity` | ~1-2 min |
+| 2a | Perplexity Upload | `perplexity-upload` | ~30 sec |
+| 2b | Perplexity Scrape | `perplexity-scrape` | ~1-2 min |
 | 3 | Text-to-Speech | `tts` | ~5 min |
 | 4 | Audio Post-Processing | `audio` | ~10 sec |
 | 5 | Wiki.js Publish | `wiki` | ~2 sec |
 | 6 | File Distribution | `distribute` | ~1 sec |
+
+Steps `perplexity-upload` and `perplexity-scrape` split the Perplexity step into two phases: upload-and-submit (no waiting) and scrape-existing-response. Use `--step perplexity-upload --continue` to submit a prompt and then scrape the result separately. Use `--step perplexity-scrape` to scrape without re-submitting.
 
 Each step checkpoints its output. If the output file exists, the step is skipped (override with `--force`).
 
@@ -152,6 +156,16 @@ Each step automatically records its input size and elapsed time to `output/.benc
 | audio | seconds of TTS audio | 0.02 sec/sec |
 
 The perplexity step is excluded from benchmarking due to high variability.
+
+## Scripts
+
+`scripts/run_perplexity/main.go` — standalone Perplexity debugging tool that
+uploads an SRT file and waits for a response outside the main pipeline.
+Useful for testing prompt changes without running the full pipeline.
+
+`scripts/discover_gradio.py` — Python script that queries a Gradio server's
+`/config` endpoint and prints all available API function names and indices.
+Use this to discover function indices when e2a updates its API.
 
 ## Build Targets
 

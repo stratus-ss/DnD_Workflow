@@ -1,15 +1,17 @@
+// Package distribute copies pipeline output files to configured destination directories.
+
 package distribute
 
 import (
 	"context"
 	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
 	"time"
 
 	"dnd-workflow/internal/config"
+	"dnd-workflow/internal/fileutil"
 )
 
 type Distributor struct {
@@ -55,7 +57,7 @@ func (d *Distributor) distributeTranscript(src, displayDate string) error {
 		return fmt.Errorf("ensure transcript dir: %w", err)
 	}
 
-	if err := copyFile(src, dst); err != nil {
+	if err := fileutil.CopyFile(src, dst); err != nil {
 		return err
 	}
 	slog.Info("transcript distributed", "dst", dst)
@@ -78,7 +80,7 @@ func (d *Distributor) distributeAudio(src, displayDate string) error {
 		return fmt.Errorf("ensure audio dir: %w", err)
 	}
 
-	if err := copyFile(src, dst); err != nil {
+	if err := fileutil.CopyFile(src, dst); err != nil {
 		return err
 	}
 	slog.Info("audio distributed", "dst", dst)
@@ -131,7 +133,7 @@ func (d *Distributor) MoveOriginalAudio(_ context.Context, srcPath, date string)
 	filename := filepath.Base(srcPath)
 	dst := filepath.Join(d.cfg.OriginalAudioDir, displayDate+filename)
 
-	if err := copyFile(srcPath, dst); err != nil {
+	if err := fileutil.CopyFile(srcPath, dst); err != nil {
 		return fmt.Errorf("copy original audio: %w", err)
 	}
 
@@ -146,23 +148,4 @@ func toDisplayDate(isoDate string) (string, error) {
 		return "", err
 	}
 	return t.Format("Jan_02_2006"), nil
-}
-
-func copyFile(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return fmt.Errorf("open %s: %w", src, err)
-	}
-	defer in.Close()
-
-	out, err := os.Create(dst)
-	if err != nil {
-		return fmt.Errorf("create %s: %w", dst, err)
-	}
-	defer out.Close()
-
-	if _, err := io.Copy(out, in); err != nil {
-		return fmt.Errorf("copy %s -> %s: %w", src, dst, err)
-	}
-	return out.Close()
 }

@@ -1,0 +1,358 @@
+# 🎙️ Session Narration - January 11th, 2026
+
+The session opened with a recap. The party had been split across dangerous terrain—Regis suffering from a cold, Granger separated and stranded, the entire group battered by the unforgiving cold of the northern wastes. The story picked up where it left off: with Granger floundering in icy water, the night closing in around him like a shroud.
+
+Granger, trapped in black water beneath broken ice flows, faced a desperate struggle. The dwarf barbarian, known more for his anchor-like properties than his swimming prowess, found himself wedged between chunks of ice. He attempted to push himself up using ice flows on either side, but the mechanics of buoyancy betrayed him. Each time he pressed down, the corners of the ice tilted upward and pushed him beneath the surface. Several gulps of frigid water later, he was briefly underwater, the ice tilting down atop him.
+
+With determination born of desperation, Granger tried a different approach. He swam beneath the ice, searching for solid purchase, probing with his hands and axe for something—anything—that might support his considerable weight. In pitch darkness, his dwarven darkvision useless against the uniformly frozen environment, he pushed ice chunks beneath him with his feet, inch by painful inch making his way toward what he hoped was solid ice.
+
+His survival instincts kicked in—perhaps inherited from that great-great-great uncle who once served as a ship's anchor. Somehow, Granger sensed which flows could not bear his weight. He moved eastward, pushing small pieces of ice under himself, shifting his body over them like stepping stones in a lethal game. His body grew sluggish in the frigid water despite his resistance to cold damage.
+
+Then, miracle of miracles, he found solid ice. He tested it with a shove—it did not move. Gathering every ounce of strength, he attempted to haul himself up. The first attempt saw him get partway onto the ice before his knee cracked through and he slid back into the water, legs and hips submerged. In a moment of quick thinking, he shifted laterally along the ice, but his palm slipped and he crashed shoulder-first back into the water, his head striking the ice edge.
+
+Moving five feet further east, Granger tried again. This time he succeeded in getting onto the ice, but his attempt to run resulted in a spectacular face-plant that left his nose bleeding. Remembering his survival reading, he rolled away from the cracking edge—a decision that likely saved his life, as he could have just as easily rolled back into the hole.
+
+Disoriented and exhausted, Granger attempted to head southeast toward the rock face but became confused in the dark and fog. He walked for half an hour heading north instead—the exact wrong direction—before realizing his mistake. Deciding discretion was the better part of valor, he rolled out his bedroll on what seemed to be solid ice and settled in for an uncomfortable night. His clothing had frozen in chunks, and beneath him he could hear unsettling sounds—fish pecking at the ice, water-borne creatures moving, or perhaps just the wind. A dwarf was not meant to sleep on ice, and he did not rest well.
+
+Meanwhile, the main party spent their night in relative comfort. Zaneska organized the construction of a snow wall to block the northern wind—a project that took two hours but provided significant thermal protection. CR stood first watch, though he let Zaneska sleep longer than her planned five hours. The night passed without incident for this group, and they woke to a fog-shrouded sunrise, hungry but rested.
+
+When morning came, the party broke camp efficiently. Zaneska made sure supplies were organized, including filling water skins with snow tucked into the tent to melt overnight. They had eaten the last of their provisions, and hunger gnawed at them all, but there was no time to dwell on empty stomachs. They had a destination to reach.
+
+The party headed south along flat terrain, making excellent time across rock that was only lightly dusted with snow. Around midday, they called a half-hour rest. During this break, Zaneska climbed a small rise to scout ahead. From her vantage point, she could see flat terrain stretching to the south, a frozen waterfall to the northeast, and evidence of elevation changes. CR's feline eyes picked out moving water beneath the ice wall—confirmation that it was indeed a waterfall, not merely a frozen cliff face.
+
+After the rest, they continued south and detoured briefly to investigate a frozen river. Regis noticed something moving beneath the thick ice—whether fish, detritus, or fever-induced hallucination, no one could be certain. The ice stood about eight feet above their current elevation, and the terrain ahead appeared to drop. They pressed onward.
+
+As they traveled, the landscape revealed what appeared to be natural stairs carved into the rock face—or at least, terrain shaped so conveniently it seemed almost intentional. Someone, or something, had made this path traversable. The party ascended without difficulty, each step bringing them higher and closer to their goal.
+
+Near the top of their climb, Zaneska spotted a figure in the distance on the ice. It sat motionless, and the party could not determine from their position whether it was living or merely a statue. As they approached cautiously, the figure resolved into an old Genasi sitting beside a fishing hole with a crude pole. Other fishing poles lay scattered about. The ice fisherman looked grumpy but made no hostile moves. Zaneska waved and called out a greeting.
+
+Elsewhere, Granger woke from his uncomfortable night and immediately set about trying to find his way off the ice. He attempted to head southeast, but fog and disorientation plagued him. At one point, lost in thought, he followed the rock face in the wrong direction for an entire hour before realizing his mistake. Frustrated, he kept one hand on the rock face to maintain his bearing and pressed onward.
+
+Eventually, Granger reached a section where the ice met a near-vertical climb. He attempted to scale it using his axe as a makeshift ice pick, wedging the curved blade into cracks and hauling himself upward. Sunlight reflecting off the ice blinded him, snow blew into his eyes, and he made frustratingly little progress. He slipped repeatedly, sliding back down, though fortune smiled enough that he took no serious damage.
+
+At one point, halfway up a sheet of ice, his axe wedged solidly and held him in place. But still sun-blind and exhausted, he slipped again and slid back to solid ground. There he remained as the session drew to a close—battered, frustrated, but alive and on solid ground rather than drowning beneath broken ice.
+
+The session ended with the main party encountering the ice fisherman and Granger making yet another attempt to scale the ice wall, inching ever closer to reuniting with his companions but not quite there yet.
+
+
+
+# 📋 DM Summary
+
+Session Overview
+
+A survival-focused session split between two parallel narratives: Granger's solo struggle to escape drowning in broken ice and rejoin civilization, and the main party's trek south across increasingly favorable terrain. The session emphasized environmental hazards, navigation challenges, and resource scarcity. Granger narrowly avoided death multiple times through creative problem-solving and fortunate rolls, while the main party encountered their first NPC in days—a Genasi ice fisherman. The session ended with both groups still separated but moving toward eventual convergence.
+
+Party Status
+
+Granger:
+
+Health: Battered. Took 7 damage from Yeti encounter (previous session), additional 2 damage from pack ripping, no new damage this session despite multiple dangerous situations
+
+Condition: Exhausted (did not achieve full rest), nose bleeding from face-plant on ice, clothing frozen in chunks, extremely hungry (no food since Yeti took supplies)
+
+Equipment: Axe, 3 arrows, broken bow, bedroll, rope, clothing. Lost: pack, food, tinderbox, torches, most supplies
+
+Rage/Totem Uses: Used Wolf Totem during swimming attempts (exhausted after extended use)
+
+Location: At base of frozen waterfall/ice cliff on eastern side, separated from party by significant distance and elevation
+
+Zaneska:
+
+Health: Good, well-rested
+
+Condition: Hungry (no food remaining)
+
+Spell Slots: Expended 3rd-level slot for Fly (1 remaining as of session end)
+
+Leadership Role: Organized camp construction, scouting, rest breaks
+
+Location: With main party, encountered ice fisherman
+
+Regis:
+
+Health: Recovering
+
+Condition: Still suffering from cold—plugged nose, sore throat, vocal spell components require difficulty checks. Affects all verbal spellcasting
+
+Wild Shape: Available (long rest completed)
+
+Spell Slots: Refreshed
+
+Location: With main party
+
+CR:
+
+Health: Good
+
+Condition: Alert, serving as scout and watch
+
+Darkvision: Key asset for nighttime observation
+
+Location: With main party, stood extended watch (6 hours instead of agreed 5)
+
+Marne:
+
+Health: Good
+
+Condition: Hungry, but well-rested
+
+Role: Providing practical advice and outdoor expertise
+
+Location: With main party
+
+Key Events & Actions
+
+Granger's Ice Escape Sequence:
+
+Started trapped in water between broken ice floes, attempting various escape methods
+Failed initial attempts to push up on ice (rolls of 4, causing submersion)
+Called upon Wolf Totem (barbarian rage ability) for enhanced dexterity and swimming
+Successfully swam between ice chunks, located solid ice edge through miraculous survival check (instinct from "anchor ancestor")
+Multiple strength check attempts to pull self onto ice: partial success followed by ice cracking
+Fell back into water twice more before finally succeeding (rolled 15 strength check)
+Face-planted on ice attempting to run, nose started bleeding
+Rolled away from hole (survival training), distributed weight properly
+Walked north by mistake for 30 minutes due to disorientation
+Corrected course, spent ~4 hours reaching base of ice cliff
+Multiple failed climbing attempts on frozen waterfall using axe as improvised ice pick
+Sun blindness and exhaustion compounded difficulties
+
+Main Party Activities:
+
+Woke well-rested after night behind snow wall
+Broke camp efficiently, filled water skins with snow to melt
+Traveled south across lightly snow-covered rock (good terrain)
+Called midday rest after several hours walking
+Zaneska scouted from elevated position: saw flat terrain south, frozen waterfall northeast, terrain dropping ahead
+CR observed moving water under ice wall (confirmed waterfall)
+Investigated frozen river: Regis saw something moving under ice (possibly fish, detritus, or fever hallucination)
+Continued south, discovered natural stair-like formations (possibly intentionally maintained path)
+Ascended without difficulty—terrain seemed almost designed for ease of travel
+Spotted figure on ice in distance (initially unclear if statue or living)
+Approached cautiously, revealed to be old Genasi ice fisherman with multiple poles scattered about
+Zaneska greeted fisherman
+
+Resources & Inventory
+
+Party Collective:
+
+Water: Snow melted in water skins overnight
+
+Rope: In use during previous climbing sections, now packed
+
+Firewood/Tinder: None available
+
+Fly Spell: 1 use remaining (Zaneska)
+
+Granger's Remaining Gear:
+
+Axe: intact, used as improvised climbing tool
+
+Broken Bow: string snapped during previous session
+
+Arrows: 3 recovered
+
+Bedroll: intact, used on ice overnight
+
+Rope: intact
+
+Clothing: frozen in chunks, needs drying
+
+Bracer: unknown origin (found near Yeti encounter site)
+
+Status of Lost Equipment (Granger):
+
+Pack: destroyed/taken by Yeti
+
+Food supplies: consumed by Yeti
+
+Tinderbox: lost
+
+Torches: lost
+
+Mess kit: lost
+
+Combat/Encounter Summary
+
+No combat this session. Primary challenges were environmental:
+
+Granger's Ice Water Survival:
+
+Difficulty Class for escaping water: Variable (15-18 range based on circumstances)
+
+Successful Rolls: Survival check (miraculous instinct), Strength 15 (pulled self onto ice), Wisdom 11 (rolled away from hole)
+
+Failed Rolls: Multiple strength checks (4, 10), Athletics for climbing (multiple failures), Navigation (walked wrong direction 30+ minutes)
+
+Damage Taken: 0 (fortunate given circumstances)
+
+Environmental Hazards Overcome:
+
+Drowning risk (6-turn timer mentioned for Regis in previous session; Granger never reached that threshold)
+
+Ice breaking beneath weight (occurred twice)
+
+Hypothermia/sluggishness (cold water affecting body despite immunity to cold damage)
+
+Disorientation in fog and darkness
+
+Sun blindness from ice glare
+
+Wind and blowing snow
+
+Unresolved Threads & Next Steps
+
+Immediate/Critical:
+
+Party reunion: Granger still separated by significant distance (estimated several miles) and ~200+ feet elevation difference
+
+Granger must complete climb up frozen waterfall or find alternate route
+
+Party needs to determine if ice fisherman is friendly, hostile, or indifferent
+
+Food scarcity: entire party hungry, no rations remaining
+
+Navigation:
+
+Party heading generally south/southeast
+
+Granger attempting to head southeast toward rock face
+
+Convergence point unknown—will paths intersect naturally or require deliberate searching?
+
+Plot Threads:
+
+Defiler still ahead (timeline: 3+ days ahead last known)
+
+Frostfall ruins: destination unclear, party navigating by general direction
+
+Prophecy unresolved: "Where roots grasp long forgotten bones, the doorway waits beneath the stones"
+
+Necromantic rituals at Frostfall (hundreds of plague dead)
+
+Auril's blessing obligations
+
+
+
+NPCs & Factions
+
+Ice Fisherman (Genasi):
+
+Race: Genasi (elemental-touched humanoid)
+
+Appearance: Old, grumpy-looking
+
+Activity: Ice fishing with crude pole
+
+Equipment: Multiple fishing poles scattered around fishing hole
+
+Attitude: Non-hostile but unreadable
+
+
+
+Absent/Unencountered:
+
+Defiler in dark furs (3+ days ahead, unknown current location)
+
+Session End State
+
+Location:
+
+Main Party: On ice near frozen river, speaking distance from Genasi ice fisherman
+
+Granger: Base of frozen waterfall/ice cliff, eastern side of terrain, alone
+
+Time: Approximately midday (party), late morning/midday (Granger)—timelines slightly offset due to Granger's disorientation
+
+Conditions:
+
+Weather: Fog present in morning (burned off by midday), wind from north, sunlight reflecting off ice (sun blindness hazard)
+
+Terrain: Party on relatively flat ice/rock, Granger at base of vertical ice climb
+
+Visibility: Good for party, impaired for Granger (sun glare, snow in eyes)
+
+Immediate Situation:
+
+Party: Mid-conversation with ice fisherman (Zaneska's "Hello" just delivered)
+
+Granger: Catching breath after sliding down ice wall again, at solid ground but frustrated
+
+Party Resources:
+
+No food
+
+Limited water (melted snow)
+
+All other spell slots refreshed (for those who long-rested)
+
+Granger's totem rage expended
+
+Mechanical Status:
+
+Regis: Cold condition persists (verbal spell components at disadvantage or require checks)
+
+Granger: Exhausted condition (likely), nose bleeding (minor), clothing frozen
+
+
+
+Prep Notes for Next Session
+
+Granger Reunion Mechanics:
+
+If Granger succeeds on climb: how long until he reaches party elevation?
+
+Alternate routes: can fisherman suggest easier path? Is there a way around the waterfall?
+
+Party search: will party look for Granger? Do they know he's nearby?
+
+Visibility: can party see Granger from their position if they look?
+
+Resource Management:
+
+Food urgency: how long until exhaustion penalties kick in?
+
+Fishing opportunity: can party obtain food from fisherman (trade, purchase, fish themselves)?
+
+Water: sustainable via melting snow, but requires time and heat source
+
+Granger's frozen clothing: needs fire or warm shelter to dry properly
+
+Environmental Challenges:
+
+Frozen waterfall: if party attempts to climb, establish DC and hazards
+
+Ice fishing holes: hazards if party moves carelessly near them
+
+Moving water under ice: potential encounter if ice breaks
+
+Mechanical Decisions Needed:
+
+Granger's exhaustion level: apply penalties? How severe?
+
+Regis's cold: duration remaining? Any worsening or improvement?
+
+Hunger effects: when do they become mechanical rather than narrative?
+
+Narrative Opportunities:
+
+Fisherman as exposition source: fill in world details, recent events, regional threats
+
+Granger's isolation: internal monologue, character development through solitary struggle
+
+Combat Prep (If Applicable):
+
+If fisherman hostile: Genasi ice-themed abilities, environmental advantages on frozen terrain
+
+If underwater creature emerges: stats for cold-adapted aquatic monster (suggested by "movement under ice")
+
+Future Session Hooks:
+
+Party direction after fisherman encounter: continue south? Turn back north? Follow fisherman's advice?
+
+Defiler timeline: party falling further behind—need to make up time
+
+Divine expectations: Auril's patience wearing thin?
+
+Frostfall discovery: when and how will party locate actual ruins?
+

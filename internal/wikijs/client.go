@@ -1,3 +1,4 @@
+// Package wikijs provides a GraphQL client for publishing pages to Wiki.js.
 package wikijs
 
 import (
@@ -8,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"dnd-workflow/internal/config"
 )
@@ -57,7 +59,7 @@ func NewClient(cfg config.WikiJSConfig, token string) *Client {
 	return &Client{
 		cfg:        cfg,
 		token:      token,
-		httpClient: &http.Client{},
+		httpClient: &http.Client{Timeout: 30 * time.Second},
 	}
 }
 

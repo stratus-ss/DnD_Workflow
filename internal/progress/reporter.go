@@ -1,8 +1,11 @@
+// Package progress tracks step timing, benchmarks, and pipeline status reporting.
+
 package progress
 
 import (
 	"context"
 	"encoding/json"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sync"
@@ -274,7 +277,9 @@ func (r *Reporter) WriteStatus(pipelineErr error) {
 		return
 	}
 	path := filepath.Join(r.sessionDir, statusFile)
-	os.WriteFile(path, data, 0o644)
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		slog.Warn("failed to write status file", "path", path, "error", err)
+	}
 }
 
 func (r *Reporter) startHeartbeat() {
@@ -391,7 +396,9 @@ func (r *Reporter) writeStateFile(state *ProgressState) {
 		return
 	}
 	path := filepath.Join(r.sessionDir, progressFile)
-	os.WriteFile(path, data, 0o644)
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		slog.Warn("failed to write progress file", "path", path, "error", err)
+	}
 }
 
 // Benchmark persistence
@@ -438,7 +445,9 @@ func (r *Reporter) saveBenchmarks() {
 		return
 	}
 	path := filepath.Join(r.outputDir, benchmarksFile)
-	os.WriteFile(path, data, 0o644)
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		slog.Warn("failed to write benchmarks file", "path", path, "error", err)
+	}
 }
 
 func (h *BenchmarkHistory) averageRate(step string, window int) float64 {

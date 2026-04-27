@@ -1,3 +1,4 @@
+// Package pipeline orchestrates the multi-step D&D session processing workflow.
 package pipeline
 
 import (
@@ -14,7 +15,18 @@ import (
 	"dnd-workflow/internal/tts"
 )
 
-var StepOrder = []string{"whisper", "perplexity", "tts", "audio", "wiki", "distribute"}
+var StepOrder = []string{"whisper", "perplexity", "perplexity-upload", "perplexity-scrape", "tts", "audio", "wiki", "distribute"}
+
+const (
+	stepWhisper          = 0
+	stepPerplexity       = 1
+	stepPerplexityUpload = 2
+	stepPerplexityScrape = 3
+	stepTTS              = 4
+	stepAudio            = 5
+	stepWiki             = 6
+	stepDistribute       = 7
+)
 
 type Transcriber interface {
 	Transcribe(ctx context.Context, audioPath, outputPath string) error
@@ -24,6 +36,11 @@ type NotesGenerator interface {
 	Start() error
 	Close()
 	GenerateNotesInThread(srtPath, promptText, threadName string) (string, string, error)
+	// UploadAndSubmit submits a prompt to Perplexity without waiting for response.
+	// Browser remains open after call; caller must call Close().
+	UploadAndSubmit(srtPath, promptText, threadName string) error
+	// ScrapeExistingResponse extracts notes/narration from a page that already has a response.
+	ScrapeExistingResponse() (string, string, error)
 }
 
 type Speaker interface {
@@ -97,6 +114,10 @@ func stepIndex(s string) int {
 // all steps from startStep onward are executed; otherwise only the single
 // requested step runs. Use "all" to run every step regardless of continueSteps.
 func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string, continueSteps bool) (retErr error) {
+	if err := config.ValidateDate(date); err != nil {
+		return err
+	}
+
 	sessionDir, err := r.cfg.EnsureSessionDir(date)
 	if err != nil {
 		return err
@@ -132,6 +153,7 @@ func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string,
 	if start <= 0 && 0 <= end {
 		srtPath, err = r.runTranscribe(ctx, audioPath, sessionDir, date)
 		if err != nil {
+			slog.Error("step failed", "step", "whisper", "error", err)
 			return fmt.Errorf("step whisper: %w", err)
 		}
 	}
@@ -147,30 +169,78 @@ func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string,
 		}
 		fullNotes, narration, err = r.runNotes(ctx, srtPath, sessionDir, date)
 		if err != nil {
+			slog.Error("step failed", "step", "perplexity", "error", err)
 			return fmt.Errorf("step perplexity: %w", err)
 		}
 	}
 
-	// Step 2: tts — needs perplexity narration output
-	if start <= 2 && 2 <= end {
-		if start > 1 {
-			narrationPath := filepath.Join(sessionDir, fmt.Sprintf("narration_%s.md", date))
-			if !fileExists(narrationPath) {
-				return fmt.Errorf("step perplexity output not found: %s", narrationPath)
+	// Step 2: perplexity-upload — upload and submit only, no wait
+	if start <= stepPerplexityUpload && stepPerplexityUpload <= end {
+		if start > stepPerplexity {
+			srtPath = filepath.Join(sessionDir, fmt.Sprintf("transcript_%s.srt.txt", date))
+			if !fileExists(srtPath) {
+				return fmt.Errorf("step whisper output not found: %s", srtPath)
 			}
-			slog.Info("using existing output", "step", "perplexity (narration)")
-			narrationData, _ := os.ReadFile(narrationPath)
+			slog.Info("using existing output", "step", "whisper", "path", srtPath)
+		}
+		if err := r.runPerplexityUpload(ctx, srtPath, sessionDir, date); err != nil {
+			slog.Error("step failed", "step", "perplexity-upload", "error", err)
+			return fmt.Errorf("step perplexity-upload: %w", err)
+		}
+	}
+
+	// Step 3: perplexity-scrape — scrape existing response
+	if start <= stepPerplexityScrape && stepPerplexityScrape <= end {
+		if start > stepPerplexityUpload {
+			srtPath = filepath.Join(sessionDir, fmt.Sprintf("transcript_%s.srt.txt", date))
+			if !fileExists(srtPath) {
+				return fmt.Errorf("step whisper output not found: %s", srtPath)
+			}
+			slog.Info("using existing output", "step", "whisper", "path", srtPath)
+		}
+		fullNotes, narration, err = r.runPerplexityScrape(ctx, srtPath, sessionDir, date)
+		if err != nil {
+			slog.Error("step failed", "step", "perplexity-scrape", "error", err)
+			return fmt.Errorf("step perplexity-scrape: %w", err)
+		}
+	}
+
+	// Step 4: tts — needs perplexity narration output
+	if start <= stepTTS && stepTTS <= end {
+		if start > stepPerplexityScrape {
+			// Check both custom recaps dir and session dir for existing narration
+			recapsDir := sessionDir
+			if r.cfg.Perplexity.SessionRecapsDir != "" {
+				recapsDir = r.cfg.Perplexity.SessionRecapsDir
+			}
+			customNarrationPath := filepath.Join(recapsDir, fmt.Sprintf("narration_%s.md", date))
+			sessionNarrationPath := filepath.Join(sessionDir, fmt.Sprintf("narration_%s.md", date))
+
+			var narrationPath string
+			if fileExists(customNarrationPath) {
+				narrationPath = customNarrationPath
+			} else if fileExists(sessionNarrationPath) {
+				narrationPath = sessionNarrationPath
+			} else {
+				return fmt.Errorf("step perplexity output not found: narration_%s.md", date)
+			}
+			slog.Info("using existing output", "step", "perplexity (narration)", "path", narrationPath)
+			narrationData, err := os.ReadFile(narrationPath)
+			if err != nil {
+				slog.Warn("failed to read existing narration", "path", narrationPath, "error", err)
+			}
 			narration = string(narrationData)
 		}
 		rawAudioPath, err = r.runTTS(ctx, narration, sessionDir, date, ext)
 		if err != nil {
+			slog.Error("step failed", "step", "tts", "error", err)
 			return fmt.Errorf("step tts: %w", err)
 		}
 	}
 
-	// Step 3: audio — needs tts output
-	if start <= 3 && 3 <= end {
-		if start > 2 {
+	// Step 5: audio — needs tts output
+	if start <= stepAudio && stepAudio <= end {
+		if start > stepPerplexityUpload {
 			rawAudioPath = filepath.Join(sessionDir, fmt.Sprintf("narration_raw_%s.%s", date, ext))
 			if !fileExists(rawAudioPath) {
 				return fmt.Errorf("step tts output not found: %s", rawAudioPath)
@@ -178,33 +248,51 @@ func (r *Runner) RunFrom(ctx context.Context, audioPath, date, startStep string,
 			slog.Info("using existing output", "step", "tts", "path", rawAudioPath)
 		}
 		if err := r.runAudioFix(ctx, rawAudioPath, sessionDir, date, ext); err != nil {
+			slog.Error("step failed", "step", "audio", "error", err)
 			return fmt.Errorf("step audio: %w", err)
 		}
 	}
 
-	// Step 4: wiki — needs perplexity notes output
-	if start <= 4 && 4 <= end {
+	// Step 6: wiki — needs perplexity notes output
+	if start <= stepWiki && stepWiki <= end {
 		if start > 1 && fullNotes == "" {
-			notesPath := filepath.Join(sessionDir, fmt.Sprintf("notes_%s.md", date))
-			if !fileExists(notesPath) {
-				return fmt.Errorf("step perplexity output not found: %s", notesPath)
+			// Check both custom recaps dir and session dir for existing notes
+			recapsDir := sessionDir
+			if r.cfg.Perplexity.SessionRecapsDir != "" {
+				recapsDir = r.cfg.Perplexity.SessionRecapsDir
 			}
-			slog.Info("using existing output", "step", "perplexity (notes)")
-			notesData, _ := os.ReadFile(notesPath)
+			customNotesPath := filepath.Join(recapsDir, fmt.Sprintf("notes_%s.md", date))
+			sessionNotesPath := filepath.Join(sessionDir, fmt.Sprintf("notes_%s.md", date))
+
+			var notesPath string
+			if fileExists(customNotesPath) {
+				notesPath = customNotesPath
+			} else if fileExists(sessionNotesPath) {
+				notesPath = sessionNotesPath
+			} else {
+				return fmt.Errorf("step perplexity output not found: notes_%s.md", date)
+			}
+			slog.Info("using existing output", "step", "perplexity (notes)", "path", notesPath)
+			notesData, err := os.ReadFile(notesPath)
+			if err != nil {
+				slog.Warn("failed to read existing notes", "path", notesPath, "error", err)
+			}
 			fullNotes = string(notesData)
 		}
 		if err := r.RunPublish(ctx, fullNotes, date); err != nil {
+			slog.Error("step failed", "step", "wiki", "error", err)
 			return fmt.Errorf("step wiki: %w", err)
 		}
 	}
 
-	// Step 5: distribute — needs whisper transcript and audio output
-	if start <= 5 && 5 <= end {
+	// Step 7: distribute — needs whisper transcript and audio output
+	if start <= stepDistribute && stepDistribute <= end {
 		if srtPath == "" {
 			srtPath = filepath.Join(sessionDir, fmt.Sprintf("transcript_%s.srt.txt", date))
 		}
 		finalAudioPath := filepath.Join(sessionDir, fmt.Sprintf("narration_final_%s.%s", date, ext))
 		if err := r.runDistribute(ctx, srtPath, finalAudioPath, date); err != nil {
+			slog.Error("step failed", "step", "distribute", "error", err)
 			return fmt.Errorf("step distribute: %w", err)
 		}
 	}
@@ -267,11 +355,25 @@ func (r *Runner) runNotes(ctx context.Context, srtPath, sessionDir, date string)
 	notesPath := filepath.Join(recapsDir, fmt.Sprintf("notes_%s.md", date))
 	narrationPath := filepath.Join(recapsDir, fmt.Sprintf("narration_%s.md", date))
 
-	if !r.force && fileExists(notesPath) && fileExists(narrationPath) {
+	// Also prepare paths in sessionDir for pipeline continuity
+	sessionNotesPath := filepath.Join(sessionDir, fmt.Sprintf("notes_%s.md", date))
+	sessionNarrationPath := filepath.Join(sessionDir, fmt.Sprintf("narration_%s.md", date))
+
+	// Check if files exist in either location (must have non-zero size)
+	skipStep := !r.force && ((nonZeroFileExists(notesPath) && nonZeroFileExists(narrationPath)) || (nonZeroFileExists(sessionNotesPath) && nonZeroFileExists(sessionNarrationPath)))
+
+	if skipStep {
 		slog.Info("notes exist, skipping")
 		r.reporter.SkipStep("perplexity")
-		notes, _ := os.ReadFile(notesPath)
-		narrationData, _ := os.ReadFile(narrationPath)
+		// Prefer reading from custom dir if it exists and non-empty, otherwise fall back to session dir
+		var notes, narrationData []byte
+		if nonZeroFileExists(notesPath) && nonZeroFileExists(narrationPath) {
+			notes, _ = os.ReadFile(notesPath)
+			narrationData, _ = os.ReadFile(narrationPath)
+		} else {
+			notes, _ = os.ReadFile(sessionNotesPath)
+			narrationData, _ = os.ReadFile(sessionNarrationPath)
+		}
 		return string(notes), string(narrationData), nil
 	}
 
@@ -309,7 +411,90 @@ func (r *Runner) runNotes(ctx context.Context, srtPath, sessionDir, date string)
 		return "", "", fmt.Errorf("write narration: %w", err)
 	}
 
+	// Also save to sessionDir to ensure pipeline continuity
+	if err := os.WriteFile(sessionNotesPath, []byte(fullNotes), 0o644); err != nil {
+		return "", "", fmt.Errorf("write session notes: %w", err)
+	}
+
+	if err := os.WriteFile(sessionNarrationPath, []byte(narration), 0o644); err != nil {
+		return "", "", fmt.Errorf("write session narration: %w", err)
+	}
+
 	slog.Info("notes saved", "path", notesPath)
+	if recapsDir != sessionDir {
+		slog.Info("notes also saved to session directory", "path", sessionNotesPath)
+	}
+	return fullNotes, narration, nil
+}
+
+func (r *Runner) runPerplexityUpload(ctx context.Context, srtPath, sessionDir, date string) error {
+	promptText, err := perplexity.LoadPrompt(r.cfg.Perplexity.PromptFile, date)
+	if err != nil {
+		return err
+	}
+
+	if err := r.notes.Start(); err != nil {
+		return fmt.Errorf("start browser: %w", err)
+	}
+	defer r.notes.Close()
+
+	r.reporter.StartStep("perplexity-upload", 0)
+	slog.Info("starting step", "step", "perplexity-upload")
+
+	if err := r.notes.UploadAndSubmit(srtPath, promptText, r.cfg.Perplexity.ThreadName); err != nil {
+		r.reporter.FailStep(err)
+		return fmt.Errorf("upload and submit: %w", err)
+	}
+
+	r.reporter.CompleteStep(progress.InputMetric{}, "perplexity-upload")
+	slog.Info("perplexity-upload complete, response pending in browser")
+	return nil
+}
+
+func (r *Runner) runPerplexityScrape(ctx context.Context, srtPath, sessionDir, date string) (string, string, error) {
+	if err := r.notes.Start(); err != nil {
+		return "", "", fmt.Errorf("start browser: %w", err)
+	}
+	defer r.notes.Close()
+
+	r.reporter.StartStep("perplexity-scrape", 0)
+	slog.Info("starting step", "step", "perplexity-scrape")
+
+	fullNotes, narration, err := r.notes.ScrapeExistingResponse()
+	if err != nil {
+		r.reporter.FailStep(err)
+		return "", "", fmt.Errorf("scrape response: %w", err)
+	}
+
+	recapsDir := sessionDir
+	if r.cfg.Perplexity.SessionRecapsDir != "" {
+		recapsDir = r.cfg.Perplexity.SessionRecapsDir
+	}
+
+	notesPath := filepath.Join(recapsDir, fmt.Sprintf("notes_%s.md", date))
+	narrationPath := filepath.Join(recapsDir, fmt.Sprintf("narration_%s.md", date))
+	sessionNotesPath := filepath.Join(sessionDir, fmt.Sprintf("notes_%s.md", date))
+	sessionNarrationPath := filepath.Join(sessionDir, fmt.Sprintf("narration_%s.md", date))
+
+	if err := os.WriteFile(notesPath, []byte(fullNotes), 0o644); err != nil {
+		return "", "", fmt.Errorf("write notes: %w", err)
+	}
+	if err := os.WriteFile(narrationPath, []byte(narration), 0o644); err != nil {
+		return "", "", fmt.Errorf("write narration: %w", err)
+	}
+	if err := os.WriteFile(sessionNotesPath, []byte(fullNotes), 0o644); err != nil {
+		return "", "", fmt.Errorf("write session notes: %w", err)
+	}
+	if err := os.WriteFile(sessionNarrationPath, []byte(narration), 0o644); err != nil {
+		return "", "", fmt.Errorf("write session narration: %w", err)
+	}
+
+	slog.Info("notes saved", "path", notesPath)
+	if recapsDir != sessionDir {
+		slog.Info("notes also saved to session directory", "path", sessionNotesPath)
+	}
+
+	r.reporter.CompleteStep(progress.InputMetric{}, filepath.Base(notesPath))
 	return fullNotes, narration, nil
 }
 
@@ -453,4 +638,10 @@ func (r *Runner) runDistribute(ctx context.Context, transcriptPath, audioPath, d
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+// nonZeroFileExists returns true if the file exists and has non-zero size.
+func nonZeroFileExists(path string) bool {
+	info, err := os.Stat(path)
+	return err == nil && info.Size() > 0
 }
